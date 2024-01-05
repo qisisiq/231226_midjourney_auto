@@ -3,6 +3,7 @@ import pyautogui
 import pygetwindow as gw
 import itertools
 import random
+import keyboard
 
 def focus_discord():
     discord_windows = [window for window in gw.getAllWindows() if 'Discord' in window.title]
@@ -33,20 +34,38 @@ def send_message(message):
     else:
         print(f"Skipped message: {message}")
 
-def generate_url_pairs(file_path):
+def generate_messages_with_single_url(single_url, file_path):
     with open(file_path, 'r') as file:
-        # Filter out lines that start with '//' and strip whitespace
         urls = [line.strip() for line in file if not line.strip().startswith('//')]
 
-    # Generate pairs using itertools.combinations
-    for url1, url2 in itertools.combinations(urls, 2):
-        yield f"/imagine {url1} {url2}"
+    for url in urls:
+        yield f"/imagine {single_url} {url}"
 
-def job():
-    for message in generate_url_pairs('231226_list2.txt'):
-        send_message(message)
-        # Wait for 20 seconds plus a random amount of time between -5 and 5 seconds
-        time.sleep(20 + random.uniform(-5, 5))
+def minimize_discord():
+    discord_windows = [window for window in gw.getAllWindows() if 'Discord' in window.title]
+    if discord_windows:
+        discord_window = discord_windows[0]
+        discord_window.minimize()
 
-# Run the job function directly
-job()
+def job(single_url, file_path):
+    try:
+        for message in generate_messages_with_single_url(single_url, file_path):
+            send_message(message)
+            random_delay = random.uniform(-1, 1)
+            print(f"Random delay: {random_delay} seconds")
+            time.sleep(3 + random_delay)
+            if keyboard.is_pressed('esc'):
+                print("Script stopped by user.")
+                break
+    except KeyboardInterrupt:
+        print("Script interrupted.")
+
+    minimize_discord()
+
+
+# Provide the single URL and the path to the list of URLs
+single_url = 'https://cdn.discordapp.com/ephemeral-attachments/1062880104792997970/1189827700542685265/1769538_orig.jpg?ex=659f9465&is=658d1f65&hm=513a353910e0b295cb92ccef1ebc7655440c4f74e471d05e08d28ad6841d9b35&'
+url_list_file_path = '231227_list.txt'
+
+# Run the job function with the specified URL and file
+job(single_url, url_list_file_path)
