@@ -84,7 +84,7 @@ def job(command, single_url, file_path):
 
 # Provide the single URL and the path to the list of URLs
 command = '/imagine'
-single_url = 'https://images.metmuseum.org/CRDImages/ep/original/DP318843.jpg'
+single_url = 'https://i.imgur.com/xdk7Xau.png'
 url_list_file_path = '240105_seed_images_github_list.txt'
 
 # Run the job function with the specified URL and file
